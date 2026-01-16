@@ -110,7 +110,7 @@ const GamePage = () => {
 
   const fetchProblem = async (slug) => {
     try {
-      const res = await axios.get(`${API_URL}/problems/${slug}`);
+      const res = await axios.get(`${API_URL}/api/problems/${slug}`);
       setCurrentProblem(res.data);
       setCode(res.data.startercode);
       setJudgeOutput(null);
@@ -125,7 +125,7 @@ const GamePage = () => {
     socket.emit("send_status", { room, status: "Submitting..." });
 
     try {
-      const response = await axios.post(`${API_URL}/judge`, {
+      const response = await axios.post(`${API_URL}/api/judge`, {
         code: code,
         problem: currentProblem ? currentProblem.title : "Unknown",
         userId: localStorage.getItem("userId"),
