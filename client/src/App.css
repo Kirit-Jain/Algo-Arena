@@ -1,0 +1,20 @@
+/* client/src/App.css */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1e1e1e; /* Dark background */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* Prevent scrolling if not needed */
+}
+
+button {
+  cursor: pointer;
+  background-color: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #005f9e;
+}

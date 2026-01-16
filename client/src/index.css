@@ -1,0 +1,72 @@
+/* client/src/index.css */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  place-items: start; /* Forces content to start at top-left */
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%; /* Forces the React App to take full width */
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* --- GAME OVER MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: #1e1e1e;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid #4caf50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+  color: white;
+  min-width: 300px;
+}
+
+.modal-title { font-size: 2rem; margin-bottom: 10px; font-weight: bold; }
+.modal-score { font-size: 1.2rem; color: #aaa; margin-bottom: 20px; }
+.modal-btn {
+  background: #4caf50; color: white; border: none;
+  padding: 12px 24px; font-size: 1rem; font-weight: bold;
+  cursor: pointer; border-radius: 6px;
+  transition: transform 0.2s;
+}
+.modal-btn:hover { transform: scale(1.05); background: #45a049; }
+
+/* --- +20 POINTS ANIMATION --- */
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+}
+
+.points-float {
+  position: absolute;
+  color: #ffd700; /* Gold */
+  font-weight: bold;
+  font-size: 1.5rem;
+  animation: floatUp 1.5s ease-out forwards;
+  pointer-events: none; /* Click through it */
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
