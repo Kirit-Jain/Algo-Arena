@@ -75,19 +75,31 @@ const GamePage = () => {
     socket.on("game_over", (data) => {
       clearInterval(timerRef.current);
 
+      const myUserId = localStorage.getItem("userId");
+
+      if (!myUserId) 
+      {
+        console.error("User ID missing in storage!");
+      }
+
+      let displayText = data.result;
+
+      if (data.winner) {
+        if (data.winner === myUserId) {
+             displayText = "🎉 YOU WON!";
+             setShowPointsAnimation(true);
+             setTimeout(() => setShowPointsAnimation(false), 2000);
+        } else {
+             displayText = "💀 YOU LOST";
+        }
+      }
+
       setGameResult({
-        result: data.result,
+        result: displayText,
         p1: data.p1Score,
         p2: data.p2Score
       });
       setShowModal(true);
-
-      const myUserId = localStorage.getItem("userId");
-      if (data.result.includes("You Won") || data.result.includes("Player 1 Wins"))
-      {
-        setShowPointsAnimation(true);
-        setTimeout(() => setShowPointsAnimation(false), 2000);
-      }
     });
 
     const handleBeforeUnload = () => {

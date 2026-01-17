@@ -206,9 +206,9 @@ module.exports = (io) => {
 
                 await awardWin(userId);
 
-                if (roomScores[room].timer) clearTimeOut(roomScores[room].timer);
+                if (roomScores[room].timer) clearTimeout(roomScores[room].timer);
 
-                io.to(room).emnit("game_over", {
+                io.to(room).emit("game_over", {
                     result: "Game Over",
                     winner: userId,
                     message: "Correct Solution Found!",
