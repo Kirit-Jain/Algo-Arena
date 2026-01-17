@@ -95,10 +95,14 @@ const GamePage = () => {
         }
       }
 
+      const leaderboard = data.leaderboard || [];
+      const myEntry = leaderboard.find(p => p.userId === myUserId);
+      const oppEntry = leaderboard.find(p => p.userId !== myUserId);
+
       setGameResult({
         result: displayText,
-        p1: data.p1Score,
-        p2: data.p2Score
+        p1: myEntry ? myEntry.score : 0, 
+        p2: oppEntry ? oppEntry.score : 0
       });
       setShowModal(true);
     });
@@ -273,5 +277,3 @@ const GamePage = () => {
 };
 
 export default GamePage;
-
-

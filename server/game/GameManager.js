@@ -31,7 +31,6 @@ let waitingPlayer = null;
 module.exports = (io) => {
     io.on("connection", (socket) => {
         
-        // --- MATCHMAKING ---
         socket.on("find_match", (data) => {
             const { userId, username } = data;
             
@@ -54,7 +53,6 @@ module.exports = (io) => {
             }
         });
 
-        // --- JOIN ROOM & TIMER LOGIC ---
         socket.on("join_room", async (payload) => {
             const roomId = typeof payload === 'object' ? payload.roomId : payload;
             const userId = typeof payload === 'object' ? payload.userId : null;
@@ -109,8 +107,7 @@ module.exports = (io) => {
                                 io.to(room).emit("game_over", {
                                     result: resultMsg,
                                     winner: winner,
-                                    p1Score: s1,
-                                    p2Score: s2
+                                    leaderboard: pList.map(p => ({ userId: p.userId, score: p.score || 0 })) // ✅ SEND LEADERBOARD
                                 });
                                 delete roomScores[room];
                             }
@@ -120,7 +117,6 @@ module.exports = (io) => {
             }
         });
 
-        // --- SUBMISSION HANDLING ---
         socket.on("submission_result", async (data) => {
             const { room, score, userId, verdict } = data;
             
@@ -133,12 +129,14 @@ module.exports = (io) => {
                 if (roomScores[room].timer) clearTimeout(roomScores[room].timer);
                 await awardWin(userId);
                 
+                // Construct leaderboard before deleting room
+                const pList = Object.values(roomScores[room]);
+                
                 io.to(room).emit("game_over", {
                     result: "Game Over",
                     winner: userId,
                     message: "Correct Solution Found!",
-                    p1Score: score, 
-                    p2Score: 0
+                    leaderboard: pList.map(p => ({ userId: p.userId, score: p.score || 0 })) // ✅ SEND LEADERBOARD
                 });
                 delete roomScores[room];
                 return;
@@ -168,14 +166,12 @@ module.exports = (io) => {
                 io.to(room).emit("game_over", {
                     result: resultMsg,
                     winner: winner,
-                    p1Score: s1,
-                    p2Score: s2
+                    leaderboard: pList.map(p => ({ userId: p.userId, score: p.score || 0 })) // ✅ SEND LEADERBOARD
                 });
                 delete roomScores[room];
             }
         });
 
-        // --- DISCONNECT HANDLING ---
         socket.on("disconnect", () => {
              if (waitingPlayer && waitingPlayer.socket.id === socket.id) waitingPlayer = null;
              
