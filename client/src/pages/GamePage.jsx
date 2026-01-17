@@ -135,7 +135,7 @@ const GamePage = () => {
   const runCode = async () => {
     setLoading(true);
     setJudgeOutput(null);
-    
+    socket.emit("send_status", { room, status: "Submitting..." });
 
     setIsSubmitted(true);
 
