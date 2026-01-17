@@ -190,32 +190,55 @@ module.exports = (io) => {
 
         // --- HANDLE CODE SUBMISSION AND WINNER CALCULATION ---
         socket.on("submission_result", async (data) => {
-            const { room, score, userId } = data;
+            const { room, score, userId, verdict } = data;
 
-            if (roomScores[room]) {
-                roomScores[room][socket.id] = { score: score, userId: userId };
+            if (!roomScores[room]) {
+                roomScores[room] = {};
             }
+
+            roomScores[room][socket.id] = { score: score, userId: userId, verdict: verdict };
 
             socket.to(room).emit("receive_status", { status: "OpponentSubmitted" });
 
+            if (verdict === "Accepted")
+            {
+                console.log(`room ${room}: Instant Win by ${userId}`);
+
+                await awardWin(userId);
+
+                if (roomScores[room].timer) clearTimeOut(roomScores[room].timer);
+
+                io.to(room).emnit("game_over", {
+                    result: "Game Over",
+                    winner: userId,
+                    message: "Correct Solution Found!",
+                    p1Score: score,
+                    p2Score: 0
+                });
+
+                delete roomScores[room];
+                return;
+            }
+
             const players = Object.values(roomScores[room] || {});
-            const allSubmitted = players.length === 2 && players.every(p => p.score !== null);
+            const allSubmitted = players.length === 2 && players.every(p => p.verdict !== null && p.verdict !== undefined);
 
             if (allSubmitted) {
                 console.log(`Room ${room}: Game Over. Calculating winner...`);
+                
                 const [p1, p2] = players;
-
-                let resultMessage = "";
+                let resultMessage = "Draw - Both Wrong";
                 let winnerId = null;
 
-                if (p1.score > p2.score) {
-                    resultMessage = "Player 1 Wins!";
+                if (p1.score > p2.score) 
+                {
                     winnerId = p1.userId;
-                } else if (p2.score > p1.score) {
-                    resultMessage = "Player 2 Wins!";
+                    resultMessage = "Player 1 Wins!";
+                } 
+                else if (p2.score > p1.score) 
+                {
                     winnerId = p2.userId;
-                } else {
-                    resultMessage = "It's a Draw! (No points awarded)";
+                    resultMessage = "Player 2 Wins!";
                 }
 
                 if (winnerId) {
@@ -229,6 +252,8 @@ module.exports = (io) => {
 
                 io.to(room).emit("game_over", {
                     result: resultMessage,
+                    winner: winnerId,
+                    message: "Both players submitted.",
                     p1Score: p1.score,
                     p2Score: p2.score
                 });
@@ -244,9 +269,7 @@ module.exports = (io) => {
             if (waitingPlayer && waitingPlayer.socket.id === socket.id)
             {
                 console.log("👋 Waiting player left the queue.")
-                {
-                    waitingPlayer = null;
-                }
+                waitingPlayer = null;
             }
 
             for (const roomId in roomScores) {
@@ -255,11 +278,25 @@ module.exports = (io) => {
                     console.log(`Removed ${socket.id} from room ${roomId}`);
                     
                     if (Object.keys(roomScores[roomId]).length === 0) {
+                        if (roomScores[roomId].timer) clearTimeout(roomScores[roomId].timer);
                         delete roomScores[roomId];
                     }
                     break; 
                 }
             }
+        });
+
+        socket.on("leave_room", ({ roomId }) => {
+             if (roomScores[roomId]) {
+                 // Remove the specific socket
+                 if (roomScores[roomId][socket.id]) delete roomScores[roomId][socket.id];
+                 
+                 // If empty, clean up
+                 if (Object.keys(roomScores[roomId]).length === 0) {
+                     if (roomScores[roomId].timer) clearTimeout(roomScores[roomId].timer);
+                     delete roomScores[roomId];
+                 }
+             }
         });
     });
 };

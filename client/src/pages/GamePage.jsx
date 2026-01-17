@@ -22,7 +22,7 @@ const GamePage = () => {
   const [loading, setLoading] = useState(false);
   const [currentProblem, setCurrentProblem] = useState(null);
   const [code, setCode] = useState("// Loading...");
-
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [gameResult, setGameResult] = useState({ result: "", p1: 0, p2: 0 });
   const [showPointAnimation, setShowPointsAnimation] = useState(false);
@@ -124,6 +124,8 @@ const GamePage = () => {
     setJudgeOutput(null);
     socket.emit("send_status", { room, status: "Submitting..." });
 
+    setIsSubmitted(true);
+
     try {
       const response = await axios.post(`${API_URL}/api/judge`, {
         code: code,
@@ -134,17 +136,20 @@ const GamePage = () => {
       const result = response.data;
       setJudgeOutput(result);
 
-      const finalScore = result.verdict === "Accepted" ? result.score : 0;
+      const verdict = response.data;
+      const finalScore = verdict === "Accepted" ? result.score : 0;
 
       socket.emit("submission_result", {
         room: room,
         score: finalScore,
         userId: localStorage.getItem("userId"),
+        verdict: verdict,
       });
 
     } catch (error) {
       console.error(error);
       setJudgeOutput({ verdict: "Error", message: "Judge Offline" });
+      setIsSubmitted(false);
     } finally {
       setLoading(false);
     }
@@ -236,9 +241,17 @@ const GamePage = () => {
 
         <div style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1, overflow: 'hidden' }}>
-            <CodeEditor code={code} onChange={handleCodeChange} />
+            <CodeEditor 
+              code={code} 
+              onChange={handleCodeChange} 
+              readOnly={isSubmitted}
+            />
           </div>
-          <SubmitButton onClick={runCode} loading={loading} />
+          <SubmitButton 
+            onClick={runCode} 
+            loading={loading} 
+            disabled={isSubmitted}
+          />
         </div>
 
       </div>
