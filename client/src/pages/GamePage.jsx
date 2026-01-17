@@ -149,7 +149,7 @@ const GamePage = () => {
       const result = response.data;
       setJudgeOutput(result);
 
-      const verdict = response.verdict;
+      const verdict = result.verdict;
       const finalScore = verdict === "Accepted" ? result.score : 0;
 
       socket.emit("submission_result", {
