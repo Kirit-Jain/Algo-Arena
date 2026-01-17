@@ -80,6 +80,7 @@ const GamePage = () => {
       if (!myUserId) 
       {
         console.error("User ID missing in storage!");
+
       }
 
       let displayText = data.result;
@@ -148,7 +149,7 @@ const GamePage = () => {
       const result = response.data;
       setJudgeOutput(result);
 
-      const verdict = response.data;
+      const verdict = response.verdict;
       const finalScore = verdict === "Accepted" ? result.score : 0;
 
       socket.emit("submission_result", {
