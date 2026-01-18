@@ -172,6 +172,10 @@ module.exports = (io) => {
             }
         });
 
+        socket.on("send_message", (data) => {
+            socket.to(data.room).emit("receive_message", data);
+        })
+
         socket.on("disconnect", () => {
              if (waitingPlayer && waitingPlayer.socket.id === socket.id) waitingPlayer = null;
              
