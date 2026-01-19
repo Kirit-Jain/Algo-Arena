@@ -27,6 +27,8 @@ const GamePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [gameResult, setGameResult] = useState({ result: "", p1: 0, p2: 0 });
   const [showPointAnimation, setShowPointsAnimation] = useState(false);
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [reviewTimeLeft, setReviewTimeLeft] = useState(300);
 
   const [timeLeft, setTimeLeft] = useState(false);
   const timerRef = useRef(null);
@@ -126,6 +128,26 @@ const GamePage = () => {
     };
   }, [roomId]);
 
+  useEffect(() => {
+    if (isReviewMode && reviewTimeLeft > 0)
+    {
+      const timer = setInterval(() => {
+        setReviewTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+    else if (isReviewMode && reviewTimeLeft === 0)
+    {
+      alert ("Session expired. Returning to lobby.");
+      window.location.href = "/";
+    }
+  }, [isReviewMode, reviewTimeLeft]);
+
+  const handleReviewMode = () => {
+    setShowModal(false);
+    setIsReviewMode(true);
+  }
+
   const fetchProblem = async (slug) => {
     try {
       const res = await axios.get(`${API_URL}/api/problems/${slug}`);
@@ -209,16 +231,17 @@ const GamePage = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
-      
+
       {showModal && (
         <GameOverModal
           result={gameResult.result}
           p1Score={gameResult.p1}
           p2Score={gameResult.p2}
           onClose={() => window.location.href = "/"}
+          onReview={handleReviewMode}
         />
       )}
-    
+
       {/* Navbar */}
       <div style={{ flexShrink: 0, padding: '10px', backgroundColor: '#2d2d2d', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
     
@@ -265,7 +288,7 @@ const GamePage = () => {
               <p>{currentProblem.description}</p>
             </div>
           ) : <p>Loading...</p>}
-    
+
           <div style={{ marginTop: 'auto', height: '200px', backgroundColor: 'black', padding: '10px', fontFamily: 'monospace' }}>
             <strong style={{ color: '#888' }}>JUDGE TERMINAL_</strong>
             <hr style={{ borderColor: '#333' }} />
@@ -285,7 +308,7 @@ const GamePage = () => {
             <CodeEditor 
               code={code} 
               onChange={handleCodeChange} 
-              readOnly={isSubmitted}
+              readOnly={isSubmitted || isReviewMode}
             />
           </div>
           <SubmitButton 
