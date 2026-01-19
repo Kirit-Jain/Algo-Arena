@@ -25,7 +25,7 @@
 
 | Match Found | Real-Time Battle | Game Over |
 |:---:|:---:|:---:|
-| ![Lobby](./screenshots/lobby.png) | ![Battle](./screenshots/battle.png) | ![Win](./screenshots/win.png) |
+| ![Lobby](./Screenshots/lobby.png) | ![Battle](./Screenshots/battle.png) | ![Win](./Screenshots/win.png) |
 
 ## Installation & Setup
 
