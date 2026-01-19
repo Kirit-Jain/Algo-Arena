@@ -2,8 +2,6 @@
 
 **Algo-Arena** is a real-time multiplayer competitive coding platform where developers battle 1-v-1 to solve algorithmic challenges. It features live state synchronization, an AI-powered code judge, and an integrated post-match review system.
 
-![Algo Arena Screenshot](./screenshots/gameplay.png)
-*(Add your screenshots in a folder named 'screenshots')*
 
 ## Features
 
@@ -27,7 +25,7 @@
 
 | Match Found | Real-Time Battle | Game Over |
 |:---:|:---:|:---:|
-| ![Lobby](./screenshots/match.png) | ![Battle](./screenshots/battle.png) | ![Win](./screenshots/win.png) |
+| ![Lobby](./screenshots/lobby.png) | ![Battle](./screenshots/battle.png) | ![Win](./screenshots/win.png) |
 
 ## Installation & Setup
 
