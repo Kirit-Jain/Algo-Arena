@@ -25,19 +25,24 @@ app.use(express.json());
 // 2. Database Connection
 connectDB();
 
-// 4. Routes (Mounting)
-app.use('/api/judge', judgeRoutes);
-app.use('/api/problems', problemRoutes);
-app.use('/api/auth', authRoutes);
-
 // 3. Server Initialization
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: [
+            process.env.CLIENT_URL,
+            "http://localhost:5173", 
+            "https://algo-arena-ten.vercel.app"
+        ],
         methods: ["GET", "POST"],
+        credentials: true
     },
 });
+
+// 4. Routes (Mounting)
+app.use('/api/judge', judgeRoutes);
+app.use('/api/problems', problemRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get("/api/leaderboard", async (req, res) => {
     try {
