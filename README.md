@@ -2,6 +2,7 @@
 
 **Algo-Arena** is a real-time multiplayer competitive coding platform where developers battle 1-v-1 to solve algorithmic challenges. It features live state synchronization, an AI-powered code judge, and an integrated post-match review system.
 
+**Live Demo:** [CLICK HERE TO VIEW LIVE SITE](https://algo-arena-ten.vercel.app/)
 
 ## Features
 
